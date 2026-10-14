@@ -1,0 +1,46 @@
+name: Windows and macOS checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run smoke
+      - run: npm run package
+      - run: node scripts/wrapper-smoke.cjs
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run smoke
+      - run: npm run package
+      - name: Verify packaged Mac app with a temporary demo profile
+        shell: bash
+        run: |
+          python3 -c 'import zipfile, pathlib; p=next(pathlib.Path("dist").glob("*-macOS-*.zip")); print(p)' > dist/archive-path.txt
+          ditto -x -k "$(cat dist/archive-path.txt)" dist/mac-check
+          SHANGYI_TEST_EXECUTABLE="$PWD/dist/mac-check/ShanGyi Usage.app/Contents/MacOS/Electron" npm run smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shangyi-macos-${{ matrix.runner }}
+          path: dist/*-macOS-*.zip

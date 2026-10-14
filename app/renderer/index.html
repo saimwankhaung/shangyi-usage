@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>ShanGyi Usage</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="widget">
+    <div id="hero">
+      <div id="mascot-wrap" role="button" tabindex="0" aria-label="ShanGyi mascot: click for usage, drag to move, right-click for settings">
+        <div class="mascot-aura"></div>
+        <video id="mascot" src="../assets/mascot/ShanGyi_Idle_Happy.webm" poster="../assets/mascot/poster.png" muted autoplay loop playsinline preload="auto"></video>
+      </div>
+      <div class="hero-caption"><span class="eyebrow">YOUR DESKTOP COMPANION</span><p id="hero-title">A little space.<br>For your limits.</p><span id="hero-status" class="connection"><i></i> Ready when you are</span></div>
+      <span id="compact-demo" hidden>DEMO</span>
+    </div>
+
+    <section id="panel" aria-label="Usage monitor">
+      <header class="panel-header">
+        <div class="brand-mark"><img src="../assets/logos/shangyi.svg" alt="ShanGyi logo"></div>
+        <div class="brand-text"><h1>ShanGyi <span>Usage</span></h1><span id="subtitle">LESS GUESSING. MORE BUILDING.</span></div>
+        <div class="header-actions">
+          <button id="settings-button" class="icon-button" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button id="compact-button" class="icon-button" title="Compact mode" aria-label="Toggle compact mode"><svg viewBox="0 0 24 24"><path d="M8 3v5H3m13-5v5h5M8 21v-5H3m13 5v-5h5"/></svg></button>
+          <button id="hide-button" class="icon-button" title="Hide to system tray" aria-label="Hide to system tray"><svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button>
+        </div>
+      </header>
+      <div id="demo-banner" hidden>DEMO MODE · Sample usage, not your account</div>
+      <div id="usage-view">
+        <div id="providers"></div>
+        <footer class="panel-footer"><span id="last-updated"><i class="status-dot"></i> Waiting for usage</span><button id="refresh-button" title="Refresh usage"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M19 12a7 7 0 0 0-12-5L4 10m1 2a7 7 0 0 0 12 5l3-3"/></svg><span id="refresh-text">Refresh</span></button></footer>
+      </div>
+      <div id="settings-view" hidden>
+        <div class="settings-heading"><h2 id="settings-title">Make yourself at home.</h2><button id="settings-back" class="text-button">Done</button></div>
+        <label class="select-row"><span id="claude-source-label">Claude source</span><select id="claude-source"><option value="vscode">VS Code extension</option><option value="terminal">Claude terminal</option></select></label>
+        <div class="setting-row"><div><strong id="connect-title">Claude Code bridge</strong><small id="connect-description">Share usage from Claude Code. No login tokens are read.</small></div><button id="connect-claude" class="small-button">Connect</button></div>
+        <div class="setting-row"><div><strong id="restore-title">Restore Claude status line</strong><small id="restore-description">Disconnect and restore your previous setting.</small></div><button id="disconnect-claude" class="small-button secondary">Restore</button></div>
+        <div class="setting-row"><div><strong>Codex CLI</strong><small id="codex-path">Automatically detected</small></div><button id="choose-codex" class="small-button secondary">Choose</button></div>
+        <div class="settings-divider"></div>
+        <label class="toggle-row"><span id="top-label">Always on top</span><input id="always-on-top" type="checkbox"><span class="toggle"></span></label>
+        <label class="toggle-row"><span id="animation-label">Mascot animations</span><input id="animations" type="checkbox"><span class="toggle"></span></label>
+        <label class="toggle-row"><span id="notification-label">Usage reminders · 80 / 95 / 100%</span><input id="notifications" type="checkbox"><span class="toggle"></span></label>
+        <label class="toggle-row"><span id="startup-label">Launch at sign-in</span><input id="launch-at-login" type="checkbox"><span class="toggle"></span></label>
+        <label class="select-row"><span id="refresh-label">Refresh Codex every</span><select id="refresh-seconds"><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="300">5 minutes</option></select></label>
+        <label class="select-row"><span id="language-label">Language</span><select id="locale"><option value="en">English</option><option value="my">မြန်မာ</option><option value="th">ไทย</option></select></label>
+        <label class="toggle-row demo-setting"><span id="demo-label">Preview with demo data</span><input id="demo" type="checkbox"><span class="toggle"></span></label>
+        <p id="bridge-note" class="settings-note">Claude updates when Claude Code shares a new status-line snapshot. Idle data is marked stale after 5 minutes; this widget does not run AI prompts to refresh usage.</p>
+        <button id="quit-button" class="text-button quit">Quit ShanGyi Usage</button>
+      </div>
+    </section>
+    <div id="compact-panel" hidden><button id="expand-button" title="Show usage details"><span class="compact-brand">S</span><span id="compact-values"></span><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button></div>
+    <div id="toast" role="status" hidden></div>
+  </main>
+  <script src="i18n.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

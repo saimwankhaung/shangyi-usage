@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mascot controls</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  h1{position:absolute;left:0;right:0;top:44px;text-align:center;font-size:84px;font-weight:800;letter-spacing:-2.5px}
+  .cards{position:absolute;left:44px;right:44px;top:170px;height:600px;display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:26px}
+  .card{position:relative;border:1.5px solid var(--line);border-radius:30px;background:rgba(255,255,255,.018);overflow:hidden}
+  .head{position:absolute;left:34px;top:30px;right:24px;display:flex;align-items:flex-start;gap:20px}
+  .head h2{font-size:44px;line-height:1.12;font-weight:700;letter-spacing:-1px;padding-top:4px}
+  .head p{font-size:22px;color:var(--muted);margin-top:8px;font-weight:400;letter-spacing:0}
+  .card .mascot{position:absolute;bottom:22px;width:250px;height:250px}
+  .one .mascot{left:18px}
+  .one .panel{position:absolute;right:26px;top:150px;width:236px}
+  .cursor{position:absolute;left:214px;bottom:96px;width:62px}
+  .two .mascot,.three .mascot{left:34px}
+  .arrows{position:absolute;right:46px;bottom:96px;width:120px}
+  .key{position:absolute;right:46px;bottom:110px;width:112px;height:96px;border-radius:16px;background:linear-gradient(#3a3f3a,#232724);border:2px solid #555c55;box-shadow:0 6px 0 #161916,0 14px 26px rgba(0,0,0,.4);display:grid;place-items:center;font-size:40px;font-weight:600;color:#e6ebe4}
+  .caption{position:absolute;left:0;right:0;bottom:46px;text-align:center;font-size:38px;font-weight:600}
+</style>
+</head>
+<body>
+  <h1>Mascot controls</h1>
+  <div class="cards">
+    <div class="card one">
+      <div class="head"><div class="num">1</div><div><h2>Click to open</h2><p>The panel opens on the side with room.</p></div></div>
+      <img class="panel" src="../images/usage-panel.png" alt="">
+      <img class="mascot" src="../../app/assets/mascot/poster.png" alt="">
+      <svg class="cursor" viewBox="0 0 40 52"><path d="M4 3v38l10-9 7 16 7-3-7-15h13Z" fill="#fff" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card two">
+      <div class="head"><div class="num">2</div><div><h2>Drag to move</h2><p>It stays where you leave it.</p></div></div>
+      <img class="mascot" src="../../app/assets/mascot/poster.png" alt="">
+      <svg class="arrows" viewBox="0 0 100 100"><path d="M50 6 38 20h8v26H20v-8L6 50l14 12v-8h26v26h-8l12 14 12-14h-8V54h26v8l14-12-14-12v8H54V20h8Z" fill="#f2f5ef"/></svg>
+    </div>
+    <div class="card three">
+      <div class="head"><div class="num">3</div><div><h2>Click again<br>or press Esc</h2></div></div>
+      <img class="mascot" src="../../app/assets/mascot/poster.png" alt="">
+      <div class="key">Esc</div>
+    </div>
+  </div>
+  <div class="caption">Right-click ShanGyi for Settings, Refresh and Quit.</div>
+</body>
+</html>

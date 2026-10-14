@@ -1,0 +1,55 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const { installVSCodeBridge, removeVSCodeBridge, readConfig } = require('../app/vscode-setup.cjs');
+test('first VS Code connection creates a backup and restores a previously absent setting', async t => {
+  const parent = path.resolve(__dirname, '../test-results'); await fs.mkdir(parent, { recursive: true });
+  const root = await fs.mkdtemp(path.join(parent, 'vscode-first-test-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const settingsFile = path.join(root, 'settings.json'), wrapperPath = path.join(root, 'helper.exe');
+  await fs.writeFile(wrapperPath, 'fixture');
+  const options = { settingsFile, wrapperPath, dataDir: path.join(root, 'profile') };
+  assert.equal((await installVSCodeBridge(options)).connected, true);
+  assert.equal((await readConfig(settingsFile)).config['claudeCode.claudeProcessWrapper'], wrapperPath);
+  assert.equal((await removeVSCodeBridge(options)).restored, true);
+  assert.equal((await readConfig(settingsFile)).config['claudeCode.claudeProcessWrapper'], undefined);
+});
+test('VS Code setup preserves JSONC comments, trailing commas and unrelated settings', async t => {
+  const parent = path.resolve(__dirname, '../test-results'); await fs.mkdir(parent, { recursive: true });
+  const root = await fs.mkdtemp(path.join(parent, 'vscode-test-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const settingsFile = path.join(root, 'settings.json'), wrapperPath = path.join(root, 'helper.exe');
+  await fs.writeFile(wrapperPath, 'fixture');
+  const original = '{\n  // Keep this comment\n  "editor.fontSize": 16,\n  "claudeCode.claudeProcessWrapper": "previous.exe",\n}\n';
+  await fs.writeFile(settingsFile, original);
+  const options = { settingsFile, wrapperPath, dataDir: path.join(root, 'profile') };
+  assert.equal((await installVSCodeBridge(options)).needsConfirmation, true);
+  assert.equal(await fs.readFile(settingsFile, 'utf8'), original);
+  await installVSCodeBridge({ ...options, replaceExisting: true });
+  await installVSCodeBridge(options);
+  const installed = await fs.readFile(settingsFile, 'utf8');
+  assert.match(installed, /Keep this comment/);
+  assert.equal((await readConfig(settingsFile)).config['editor.fontSize'], 16);
+  assert.equal((await removeVSCodeBridge(options)).restored, true);
+  assert.equal((await readConfig(settingsFile)).config['claudeCode.claudeProcessWrapper'], 'previous.exe');
+  assert.match(await fs.readFile(settingsFile, 'utf8'), /Keep this comment/);
+});
+test('missing Claude snapshot is waiting when setup is configured', async () => {
+  const { readClaude } = require('../app/providers/claude.cjs');
+  const value = await readClaude(path.resolve(__dirname, '../test-results/missing-snapshot.json'), { configured: true, source: 'vscode' });
+  assert.equal(value.status, 'waiting');
+  assert.match(value.message, /Connected.*Account & usage/);
+});
+test('local setup selects VS Code and preserves existing widget preferences', async t => {
+  const parent = path.resolve(__dirname, '../test-results'); await fs.mkdir(parent, { recursive: true });
+  const root = await fs.mkdtemp(path.join(parent, 'local-setup-test-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const wrapper = path.join(root, 'ShanGyiClaudeBridge.exe'); await fs.writeFile(wrapper, 'fixture');
+  const profile = path.join(root, 'ShanGyi Usage'); await fs.mkdir(profile);
+  await fs.writeFile(path.join(profile, 'settings.json'), JSON.stringify({ locale: 'my', animations: false }));
+  await require('../app/setup-vscode.cjs').install(wrapper, root);
+  const widget = JSON.parse(await fs.readFile(path.join(profile, 'settings.json'), 'utf8'));
+  assert.equal(widget.claudeSource, 'vscode'); assert.equal(widget.locale, 'my'); assert.equal(widget.animations, false);
+  assert.equal((await readConfig(path.join(root, 'Code', 'User', 'settings.json'))).config['claudeCode.claudeProcessWrapper'], wrapper);
+});

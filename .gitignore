@@ -1,0 +1,8 @@
+node_modules/
+dist/
+test-results/
+*.log
+settings.json
+claude-snapshot.json
+.env
+.env.*
