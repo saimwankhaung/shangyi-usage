@@ -1,6 +1,6 @@
 {
   "name": "shangyi-usage",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "ShanGyi floating desktop companion for Claude and Codex usage limits",
   "main": "app/main.cjs",
   "private": true,

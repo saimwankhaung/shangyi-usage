@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.7 — 2026-11-01
+
+- macOS: the widget now stays on top of full-screen apps and on every Space
+  (desktop) while "Always on top" is on. It is a floating panel there, so a
+  full-screen app no longer hides it.
+- The usage panel prefers to open above or below the mascot. On laptop-height
+  screens, where the full panel does not fit there, it opens a little shorter
+  (and scrolls) instead of jumping to the side; it only goes beside the mascot
+  when there is really no room above or below. The mascot still never moves.
+- macOS builds (Apple Silicon and Intel) are attached as a preview. They are not
+  signed by Apple yet: the first time, allow the app in System Settings →
+  Privacy & Security → Open Anyway.
+
 ## 0.1.6 — 2026-10-15
 
 First public release.
