@@ -188,9 +188,20 @@ function menu() {
       if (!item.checked && win.isVisible()) win.webContents.send('ui:collapse'); else changeCompact(!item.checked);
     } },
     { label: L('Settings…'), click: () => { setSize(false); win.show(); win.focus(); publish(); win.webContents.send('ui:settings'); } },
-    { label: L('Always on top'), type: 'checkbox', checked: settings.alwaysOnTop, click: async item => { settings.alwaysOnTop = item.checked; win.setAlwaysOnTop(item.checked); await persistSettings(); publish(); } },
+    { label: L('Always on top'), type: 'checkbox', checked: settings.alwaysOnTop, click: async item => { settings.alwaysOnTop = item.checked; applyOnTop(); await persistSettings(); publish(); } },
     { type: 'separator' }, { label: L('Quit'), click: () => app.quit() }
   ]);
+}
+// On macOS a full-screen app gets its own Space, and an always-on-top window stays behind on the
+// desktop Space. Joining every Space with visibleOnFullScreen (NSWindowCollectionBehavior
+// canJoinAllSpaces + fullScreenAuxiliary) keeps the widget over full-screen apps too. The dock icon
+// is already hidden, so the process-type switch Electron would otherwise do is skipped (it would
+// flash the window and bring the dock icon back).
+function applyOnTop() {
+  win.setAlwaysOnTop(settings.alwaysOnTop, 'floating');
+  if (process.platform === 'darwin') {
+    win.setVisibleOnAllWorkspaces(settings.alwaysOnTop, { visibleOnFullScreen: true, skipTransformProcessType: true });
+  }
 }
 function validateSettings(input) {
   const value = {};
@@ -209,7 +220,7 @@ function ipc() {
     const previousDemo = settings.demo;
     const previousClaudeSource = settings.claudeSource;
     settings = { ...settings, ...validateSettings(input) };
-    win.setAlwaysOnTop(settings.alwaysOnTop);
+    applyOnTop();
     if (!testing) app.setLoginItemSettings({ openAtLogin: settings.launchAtLogin, path: process.execPath });
     if (settings.demo && !previousDemo) { client?.stop(); client = null; }
     await persistSettings();
@@ -323,6 +334,7 @@ else {
       title: L('ShanGyi Usage'), icon: path.join(__dirname, 'assets', 'icon.png'),
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true,
         nodeIntegration: false, sandbox: true, webSecurity: true, backgroundThrottling: false, offscreen: testing, devTools: testing } });
+    applyOnTop();
     keepOnScreen();
     win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     win.webContents.on('will-navigate', event => event.preventDefault());
