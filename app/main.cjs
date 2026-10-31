@@ -329,6 +329,9 @@ else {
       : { x: workArea.x + workArea.width - 330, y: workArea.y + workArea.height - 256 };
     layout = layoutFor({ compact: true, mascot: mascotInCompact(home), workArea });
     win = new BrowserWindow({ ...layout.bounds,
+      // macOS 14+ lets only a panel (non-activating NSPanel style) float over another app's
+      // full-screen Space; a normal window stays behind even with the collection behaviour set.
+      ...(process.platform === 'darwin' ? { type: 'panel' } : {}),
       frame: false, transparent: true, backgroundColor: '#00000000', resizable: false, maximizable: false,
       fullscreenable: false, show: false, alwaysOnTop: settings.alwaysOnTop, skipTaskbar: true,
       title: L('ShanGyi Usage'), icon: path.join(__dirname, 'assets', 'icon.png'),
