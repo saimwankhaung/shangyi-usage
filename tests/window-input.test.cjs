@@ -180,6 +180,23 @@ test('without room above or below, the panel opens beside the mascot', async () 
   assert.ok(left.panel().x + left.panel().width <= 1718 && inside(left.panel(), workArea));
 });
 
+test('on a laptop-height screen the panel stays above, shorter, instead of jumping to the side', async () => {
+  // A 1440×900 Mac: menu bar 25, Dock ~78, so ~797 of work area; mascot in its default corner.
+  const workArea = { x: 0, y: 25, width: 1440, height: 797 };
+  const view = mainWindow(async () => {}, { start: { x: 1110, y: 566 }, workArea });
+  await view.handlers.get('window:compact')(null, false);
+  assert.equal(view.layout().placement, 'above');
+  assert.deepEqual(view.mascot(), { x: 1128, y: 597 });
+  assert.ok(view.panel().height >= 420 && view.panel().height < 590, `panel height ${view.panel().height}`);
+  assert.ok(view.panel().y + view.panel().height <= 597, 'panel is above the mascot');
+  assert.ok(inside(view.panel(), workArea));
+  // Near the top of the same screen it goes below, also shorter.
+  const top = mainWindow(async () => {}, { start: { x: 600, y: 30 }, workArea });
+  await top.handlers.get('window:compact')(null, false);
+  assert.equal(top.layout().placement, 'below');
+  assert.ok(inside(top.panel(), workArea));
+});
+
 test('a dropped mascot keeps its panel side while it fits and flips when it does not', async () => {
   const view = mainWindow(async () => {});
   await view.handlers.get('window:compact')(null, false);
